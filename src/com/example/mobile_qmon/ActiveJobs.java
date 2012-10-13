@@ -14,12 +14,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class ActiveJobs extends Activity{
+public class ActiveJobs extends Activity {
 	private LinearLayout rootView;
 	private long REFRESH_INTVL = 60000L;
 	private int REFRESH_SIGNL = 0;
@@ -31,12 +32,14 @@ public class ActiveJobs extends Activity{
 			ActiveJobs.this.mHandler.sendEmptyMessage(REFRESH_SIGNL);
 		};
 	};
-	
+
 	private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg){
+		public void handleMessage(Message msg) {
 			if (service != null) {
 				try {
 					String qstatOutput = service.retrieveJobs();
+					Log.d("PrintStatement", "qstatOutput RAW: '" + qstatOutput
+							+ "'");
 					Job[] jobList = parseRawQstatOutput(qstatOutput);
 					updateActiveJobView(jobList);
 				} catch (RemoteException e) {
@@ -46,7 +49,7 @@ public class ActiveJobs extends Activity{
 			}
 		}
 	};
-	
+
 	class Job {
 		private String name, ID;
 		private int processingTime, wallTime, queueTimeLimit;
@@ -86,7 +89,7 @@ public class ActiveJobs extends Activity{
 					Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	private void initService() {
 		connection = new qServiceConnection();
 		Intent i = new Intent();
@@ -119,9 +122,21 @@ public class ActiveJobs extends Activity{
 
 	private Job[] parseRawQstatOutput(String qstatOutput) {
 		String[] formattedOutput = qstatOutput.split("\n");
-		Job[] jobList = new Job[formattedOutput.length];
-		for (int i = 0; i < formattedOutput.length; i++) {
-			Job j = new Job("<jobID>", formattedOutput[i]);
+		int numJobs = formattedOutput.length;
+		Log.d("PrintStatement", "job length: " + numJobs);
+		Job[] jobList = new Job[numJobs];
+		for (int i = 0; i < numJobs; i++) {
+			Log.d("PrintStatement", "job name: '" + formattedOutput[i] + "'");
+			String line = formattedOutput[i];
+			line = line.replaceAll("\\s+", ",");
+			String jobId = line.split(",")[0];
+			String jobName = line.split(",")[1];
+			String jobUser = line.split(",")[2];
+			String jobTime = line.split(",")[3];
+			String jobStatus = line.split(",")[4];
+			String jobQueue = line.split(",")[5];
+			Job j = new Job(jobId, jobName + " " + jobTime + " " + jobStatus
+					+ " " + jobQueue);
 			jobList[i] = j;
 		}
 		return jobList;
@@ -153,6 +168,6 @@ public class ActiveJobs extends Activity{
 
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
