@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".QueueMonitor">
+            android:name=".QueueMonitor" android:process=".remoteService">
         </service>
     </application>
 
