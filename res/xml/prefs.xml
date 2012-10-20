@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="username"
+        android:summary="@string/username_summ"
+        android:title="@string/username" >
+    </EditTextPreference>
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="password"
+        android:password="true"
+        android:summary="@string/password_summ"
+        android:title="@string/password" >
+    </EditTextPreference>
+    <EditTextPreference
+        android:defaultValue="aciss.uoregon.edu"
+        android:key="hostname"
+        android:summary="@string/hostname_summ"
+        android:title="@string/hostname" >
+    </EditTextPreference>
+
+</PreferenceScreen>

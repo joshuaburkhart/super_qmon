@@ -50,6 +50,22 @@ reply.writeNoException();
 reply.writeString(_result);
 return true;
 }
+case TRANSACTION_retrieveErrorMessage:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _result = this.retrieveErrorMessage();
+reply.writeNoException();
+reply.writeString(_result);
+return true;
+}
+case TRANSACTION_retrieveErrorStatus:
+{
+data.enforceInterface(DESCRIPTOR);
+int _result = this.retrieveErrorStatus();
+reply.writeNoException();
+reply.writeInt(_result);
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -85,8 +101,46 @@ _data.recycle();
 }
 return _result;
 }
+public java.lang.String retrieveErrorMessage() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+java.lang.String _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_retrieveErrorMessage, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readString();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
+public int retrieveErrorStatus() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+int _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_retrieveErrorStatus, _data, _reply, 0);
+_reply.readException();
+_result = _reply.readInt();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
 }
 static final int TRANSACTION_retrieveJobs = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
+static final int TRANSACTION_retrieveErrorMessage = (android.os.IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_retrieveErrorStatus = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
 }
 public java.lang.String retrieveJobs() throws android.os.RemoteException;
+public java.lang.String retrieveErrorMessage() throws android.os.RemoteException;
+public int retrieveErrorStatus() throws android.os.RemoteException;
 }
