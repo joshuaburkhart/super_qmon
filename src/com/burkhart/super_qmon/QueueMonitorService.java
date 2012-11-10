@@ -11,9 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-import com.burkhart.super_qmon.R;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -36,12 +34,8 @@ public class QueueMonitorService extends Service {
 		String qStatOutput = null;
 		String eMessage = null;
 		int eStatus = 0;
-
 		try {
 			JSch jsch = new JSch();
-			// Log.d("tag!!!", "CREDENTIALS: " + username);
-			// Log.d("tag!!!", "CREDENTIALS: " + password);
-			// Log.d("tag!!!", "CREDENTIALS: " + hostname);
 			session = jsch.getSession(username, hostname, 22);
 			session.setPassword(password);
 			Properties properties = new Properties();
@@ -61,16 +55,13 @@ public class QueueMonitorService extends Service {
 			}
 			qStatOutput = outputBuffer.toString();
 		} catch (NullPointerException e) {
-			Log.d("tag!!!", "DETECTED NULL POINTER EXCEPTION");
 			eStatus = 1;
 			eMessage = e.getMessage();
 		} catch (IOException e) {
-			Log.d("tag!!!", "DETECTED IO EXCEPTION");
 			eStatus = 1;
 			eMessage = e.getMessage();
 		} catch (JSchException e) {
 			credentials_valid = false;
-			Log.d("tag!!!", "DETECTED INVALID CREDENTIALS");
 			eStatus = 1;
 			eMessage = e.getMessage();
 		} finally {
@@ -85,7 +76,6 @@ public class QueueMonitorService extends Service {
 	}
 
 	private void announceQueuedJobs(String output, int eStatus, String eMessage) {
-		Log.d("tag!!!", "broadcasting output...");
 		Intent intent = new Intent(BCAST_QJA);
 		intent.putExtra("output", output);
 		intent.putExtra("eStatus", eStatus);
@@ -106,12 +96,10 @@ public class QueueMonitorService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		Log.d("tag!!!", "service onStart called...");
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		username = prefs.getString("username", "");
 		password = prefs.getString("password", "");
 		hostname = prefs.getString("hostname", "aciss.uoregon.edu");
-
 		credentials_valid = true;
 		if (doRefresh != null) {
 			doRefresh.cancel();
@@ -125,11 +113,8 @@ public class QueueMonitorService extends Service {
 		doRefresh = new TimerTask() {
 			public void run() {
 				if (credentials_valid) {
-					Log.d("tag!!!", "credentails valid, refreshing jobs...");
 					refreshQueuedJobs();
 				} else {
-					Log.d("tag!!!", "credentials are not valid...");
-
 				}
 			}
 		};

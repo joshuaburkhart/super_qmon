@@ -10,7 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.util.Log;
+import android.graphics.PorterDuff;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,7 +27,7 @@ public class QueueMonitorActivity extends Activity {
 	private SharedPreferences prefs;
 	private LayoutParams buttonLayout = new LinearLayout.LayoutParams(
 			ViewGroup.LayoutParams.FILL_PARENT,
-			ViewGroup.LayoutParams.FILL_PARENT, 1.0F);
+			ViewGroup.LayoutParams.WRAP_CONTENT, 1.0F);
 	QueuedJobAnnouncementReceiver receiver;
 
 	public class QueuedJobAnnouncementReceiver extends BroadcastReceiver {
@@ -37,35 +38,25 @@ public class QueueMonitorActivity extends Activity {
 			String output = "";
 			String eMessage = "";
 			if (intent == null) {
-				Log.d("tag!!!", "received a null intent...");
 			} else if (intent.getExtras() == null) {
-				Log.d("tag!!!", "intent.getExtras is null...");
 			} else {
-				Log.d("tag!!!", intent.getExtras().toString());
 				output = intent.getExtras().getString("output");
-				Log.d("tag!!!", "output: " + output);
 				eStatus = intent.getExtras().getInt("eStatus");
-				Log.d("tag!!!", "eStatus: " + eStatus + "");
 				eMessage = intent.getExtras().getString("eMessage");
-				Log.d("tag!!!", "eMessage: " + eMessage);
 			}
 			try {
 				if (eStatus == 0) {
 					String qstatOutput = output;
-					Log.d("PrintStatement", "qstatOutput RAW: '" + qstatOutput
-							+ "'");
 					Job[] jobList = parseRawQstatOutput(qstatOutput);
 					updateActiveJobView(jobList);
 				} else if (eStatus == 1) {
 					String errorMessage = eMessage;
-					Log.d("PrintStatement", "error RAW: '" + errorMessage + "'");
 					setErrorView(errorMessage);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	class Job {
@@ -120,6 +111,8 @@ public class QueueMonitorActivity extends Activity {
 				String activeJobDisplayName = j.getID() + "   " + j.getName();
 				butt.setText(activeJobDisplayName);
 				butt.setTextColor(Color.BLACK);
+				butt.getBackground().setColorFilter(0xFFFFF563,
+						PorterDuff.Mode.MULTIPLY);
 				butt.setLayoutParams(buttonLayout);
 				rootView.addView(butt);
 			}
@@ -142,8 +135,6 @@ public class QueueMonitorActivity extends Activity {
 			numJobs = formattedOutput.length;
 			jobList = new Job[numJobs];
 			for (int i = 0; i < numJobs; i++) {
-				Log.d("PrintStatement", "job name: '" + formattedOutput[i]
-						+ "'");
 				String line = formattedOutput[i];
 				line = line.replaceAll("\\s+", ",");
 				Job j;
@@ -162,7 +153,6 @@ public class QueueMonitorActivity extends Activity {
 				}
 				jobList[i] = j;
 			}
-			Log.d("PrintStatement", "job length: " + numJobs);
 		}
 		return jobList;
 	}
@@ -170,14 +160,13 @@ public class QueueMonitorActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		rootView = new LinearLayout(this);
 		rootView.setOrientation(LinearLayout.VERTICAL);
 		rootView.setBackgroundColor(0xFF14400B);
+		rootView.setPadding(5,3,5,3);
 		rootView.setLayoutParams(new LinearLayout.LayoutParams(
 				ViewGroup.LayoutParams.FILL_PARENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT, 0.0F));
-
 		setContentView(rootView);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	}
@@ -186,10 +175,8 @@ public class QueueMonitorActivity extends Activity {
 	protected void onResume() {
 		String username = prefs.getString("username", "");
 		if (username.equals("")) {
-			Log.d("tag!!!", "username is blank!");
 			startActivity(new Intent(this, QueueMonitorPreferenceActivity.class));
 		} else {
-			Log.d("tag!!!", "resuming main activity... starting service");
 			service = startService(new Intent(this, QueueMonitorService.class));
 			IntentFilter filter = new IntentFilter(
 					QueueMonitorService.BCAST_QJA);
@@ -210,7 +197,6 @@ public class QueueMonitorActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_prefs:
-			Log.d("tag!!!", "onOptionsItemSelected called, stopping service...");
 			stopService(new Intent(this, service.getClass()));
 			startActivity(new Intent(this, QueueMonitorPreferenceActivity.class));
 			break;
@@ -225,5 +211,4 @@ public class QueueMonitorActivity extends Activity {
 		}
 		super.onPause();
 	}
-
 }
