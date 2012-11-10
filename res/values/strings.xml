@@ -1,16 +1,15 @@
 <resources>
 
-    <string name="app_name">mobile_qmon</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">super_qmon</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_active_jobs">ActiveJobs</string>
-    <string name="title_activity_qmpreferences">QMPreferences</string>
+    <string name="title_activity_queue_monitor">Queue Monitor</string>
+    <string name="title_activity_queue_monitor_preferences">Queue Monitor Preferences</string>
     <string name="title_prefs">Preferences</string>
-	<string name="username">User</string>
-	<string name="username_summ">the username for this account</string>
-	<string name="password">Password</string>
-	<string name="password_summ">the password for this account</string>
-	<string name="hostname">Host</string>
-	<string name="hostname_summ">the hostname for this account</string>
-    
+    <string name="username">Username</string>
+    <string name="username_summ">the username for this account</string>
+    <string name="password">Password</string>
+    <string name="password_summ">the password for this account</string>
+    <string name="hostname">Remote Host</string>
+    <string name="hostname_summ">the remote host with which to connect</string>
+
 </resources>
